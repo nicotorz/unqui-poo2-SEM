@@ -15,8 +15,11 @@ public class SEMSystem {
 	private List<Inspector> inspectors;
 	private List<Parking> parkings;
 	private List<Infraccion> infracciones;
+	private List<String> patentes;
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
+	
+	//Constructor
 	
 	public SEMSystem(LocalDateTime startTime, LocalDateTime endTime) {
 		this.zones = new ArrayList<Zone>();
@@ -26,6 +29,43 @@ public class SEMSystem {
 		this.setStartTime(startTime);
 		this.setEndTime(endTime);
 	}
+	
+	public void endParking(Parking parking) {
+		this.parkings.remove(parking); //VER SI ES ASÍ
+	}
+	
+	public void issueFine(String patente) {
+		if(this.contieneLaPatente(patente)) {
+			//Infraccion nuevaInfraccion = new Infraccion(patente,LocalDateTime.now());
+			//this.addInfraccion(nuevaInfraccion);
+		}
+	}
+	
+	public boolean contieneLaPatente(String patente) {
+		return this.patentes.contains(patente);
+	}
+	
+	public void recordPurchase() {	//HACER
+		
+	}
+	
+	public void checkParking(String patente) { //HACER
+		
+	}
+	
+	public Double checkBalancce() { //HACER
+		return 0D;
+	}
+	
+	public void endAllParkings() { //VER SI ES ASÍ.
+		this.parkings.removeAll(parkings);
+	}
+	
+	public void notifyEntities() { //HACER
+		
+	}
+	
+	//AGREGAR zone, inspector, parking, infraccion.
 	
 	public void addZone(Zone zone) {
 		zones.add(zone);
@@ -37,10 +77,6 @@ public class SEMSystem {
 	
 	public void addParking(Parking parking) {
 		parkings.add(parking);
-	}
-	
-	public void endParking(Parking parking) {
-		
 	}
 	
 	public void addInfraccion(Infraccion infraccion) {
