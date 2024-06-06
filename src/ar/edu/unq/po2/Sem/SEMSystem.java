@@ -15,7 +15,7 @@ public class SEMSystem {
 	private List<Inspector> inspectors;
 	private List<Parking> parkings;
 	private List<Infraccion> infracciones;
-	private List<String> patentes;
+	//private List<UserApp,Double> usuarios; VER COMO ARREGLAR
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
 	
@@ -30,39 +30,42 @@ public class SEMSystem {
 		this.setEndTime(endTime);
 	}
 	
-	public void endParking(Parking parking) {
-		this.parkings.remove(parking); //VER SI ES ASÍ
-	}
-	
-	public void issueFine(String patente) {
-		if(this.contieneLaPatente(patente)) {
-			//Infraccion nuevaInfraccion = new Infraccion(patente,LocalDateTime.now());
+	public void issueFine(String patente,Zone zone) {
+		if(this.checkParking(patente) && this.checkZone(zone)) {
+			//Infraccion nuevaInfraccion = new Infraccion(patente,zone.getInspector(),LocalDateTime.now(),zone);
 			//this.addInfraccion(nuevaInfraccion);
 		}
 	}
 	
-	public boolean contieneLaPatente(String patente) {
-		return this.patentes.contains(patente);
-	}
-	
-	public void recordPurchase() {	//HACER
-		
-	}
-	
-	public void checkParking(String patente) { //HACER
-		
-	}
-	
-	public Double checkBalancce() { //HACER
-		return 0D;
-	}
-	
-	public void endAllParkings() { //VER SI ES ASÍ.
-		this.parkings.removeAll(parkings);
-	}
-	
 	public void notifyEntities() { //HACER
 		
+	}
+	
+	//Verifica si está en la lista
+	
+	public boolean checkZone(Zone zone) {
+		return this.zones.contains(zone);
+	}
+	
+	public boolean checkParking(String patente) {
+		return true;
+		//return this.parkings.stream().anyMatch(p -> p.getPatente().equals(patente));
+	}
+	
+	/*public Double checkBalance(String number,UserApp user) { //VER COMO SE HACE
+		if(user.getPhoneHumber().equals(number)) {	
+			return user.getBalance();
+		}
+	} */
+	
+	//Finaliza los parkings
+	
+	public void endParking(Parking parking) {
+		this.parkings.remove(parking); 
+	}
+	
+	public void endAllParkings() { 
+		this.parkings.removeAll(parkings);
 	}
 	
 	//AGREGAR zone, inspector, parking, infraccion.
