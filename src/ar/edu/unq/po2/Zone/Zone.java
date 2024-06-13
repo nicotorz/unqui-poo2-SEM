@@ -20,7 +20,7 @@ public class Zone {
 		this.estacionamientos = new ArrayList<Parking>();
 		this.listaPuntosDeVenta = new ArrayList<PointOfSale>();
 		
-	}
+	} 
 
 	public void agregarParking(Parking parking) {
 		
@@ -51,24 +51,13 @@ public class Zone {
 		return estacionamientos;
 	}
 
-	public void setEstacionamientos(List<Parking> estacionamientos) {
-		this.estacionamientos = estacionamientos;
-	}
-
+	
 	public String getNombre() {
 		return nombre;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
 	public List<PointOfSale> getListaPuntosDeVenta() {
 		return listaPuntosDeVenta;
-	}
-
-	public void setListaPuntosDeVenta(List<PointOfSale> listaPuntosDeVenta) {
-		this.listaPuntosDeVenta = listaPuntosDeVenta;
 	}
 
 	public Inspector getInspector() {

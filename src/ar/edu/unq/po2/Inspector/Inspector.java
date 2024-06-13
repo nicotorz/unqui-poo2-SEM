@@ -53,21 +53,16 @@ public class Inspector {
 			
 		}
 		
-		
+		 
 	}
 	
 	
 	public String getName() {
 		return name;
 	}
-	private void setName(String name) {
-		this.name = name;
-	}
+
 	public Zone getZona() {
 		return zona;
-	}
-	private void setZona(Zone zona) {
-		this.zona = zona;
 	}
 
 
