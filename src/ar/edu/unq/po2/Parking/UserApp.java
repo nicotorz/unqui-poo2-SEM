@@ -1,7 +1,7 @@
 package ar.edu.unq.po2.Parking;
 
 import ar.edu.unq.po2.Sem.SEMSystem;
-import ar.edu.unq.po2.Zone.Zona;
+import ar.edu.unq.po2.Zone.Zone;
 
 public class UserApp implements MovementSensor {
 	
@@ -25,7 +25,7 @@ public class UserApp implements MovementSensor {
 	
 	public void iniciarParking (String patente) {
 		Parking parking = new ParkingViaApp(patente, this);
-		parking.setZona(this.zonaActual());
+		parking.setZone(this.zonaActual());
 		this.sistemaCentral.addParking(parking);
 	}
 	
@@ -33,7 +33,7 @@ public class UserApp implements MovementSensor {
 		this.sistemaCentral.endParking(this.numeroAsociado);
 	}
 	
-	public Zona zonaActual() {
+	public Zone zonaActual() {
 		return null;
 	}
 	

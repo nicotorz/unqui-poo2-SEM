@@ -10,18 +10,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import ar.edu.unq.po2.Sem.SEMSystem;
-import ar.edu.unq.po2.Zone.Zona;
+import ar.edu.unq.po2.Zone.Zone;
 
 class PuntoDeVentaTest {
 
 	private SEMSystem centralSystem;
-	private Zona quilmesCentro;
+	private Zone quilmesCentro;
 	private PuntoDeVenta kiosko;
 	
 	@BeforeEach
 	public void setUp() {
 		centralSystem = Mockito.mock(SEMSystem.class);
-		quilmesCentro = Mockito.mock(Zona.class);
+		quilmesCentro = Mockito.mock(Zone.class);
 		kiosko = new PuntoDeVenta(centralSystem, quilmesCentro);
 	}
 	

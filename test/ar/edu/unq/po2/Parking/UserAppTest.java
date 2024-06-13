@@ -14,19 +14,19 @@ import org.mockito.Mockito;
 
 import ar.edu.unq.po2.Parking.UserApp.Modo;
 import ar.edu.unq.po2.Sem.SEMSystem;
-import ar.edu.unq.po2.Zone.Zona;
+import ar.edu.unq.po2.Zone.Zone;
 
 class UserAppTest {
 	
 	private SEMSystem sistemaCentralMock;
-	private Zona zonaMock;
+	private Zone zonaMock;
 	private UserApp app;
 	private UserApp appSpy;
 	
 	@BeforeEach
 	public void setUp() {
 		sistemaCentralMock = Mockito.mock(SEMSystem.class);
-		zonaMock = Mockito.mock(Zona.class);
+		zonaMock = Mockito.mock(Zone.class);
 		app = new UserApp("111234567", sistemaCentralMock, "BO 012 CA");
 		appSpy = Mockito.spy(app);
 	}

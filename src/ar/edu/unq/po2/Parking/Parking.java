@@ -2,13 +2,13 @@ package ar.edu.unq.po2.Parking;
 
 import java.time.LocalDateTime;
 
-import ar.edu.unq.po2.Zone.Zona;
+import ar.edu.unq.po2.Zone.Zone;
 
 public abstract class Parking {
 	
 	protected String patente;
 	protected LocalDateTime horaDeInicio;
-	protected Zona zona;
+	protected Zone zona;
 	
 	public Parking(String patente) {
 		this.patente = patente;
@@ -35,11 +35,11 @@ public abstract class Parking {
 			this.horaDeInicio = horaDeInicio;
 		}
 		
-		public Zona getZona() {
+		public Zone getZona() {
 			return this.zona;
 		}
 		
-		public void setZona(Zona zona) {
+		public void setZone(Zone zona) {
 			this.zona = zona;
 		}
 }

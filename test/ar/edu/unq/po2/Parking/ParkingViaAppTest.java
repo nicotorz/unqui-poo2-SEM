@@ -10,20 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import ar.edu.unq.po2.Sem.SEMSystem;
-import ar.edu.unq.po2.Zone.Zona;
+import ar.edu.unq.po2.Zone.Zone;
 
 class ParkingViaAppTest {
 	
 	private UserApp appMock;
 	private SEMSystem sistemaCentralMock;
 	private ParkingViaApp parkingPorApp;
-	private Zona zonaMock;
+	private Zone zonaMock;
 	
 	@BeforeEach
 	public void setUp() {
 		sistemaCentralMock = Mockito.mock(SEMSystem.class);
 		appMock = Mockito.mock(UserApp.class);
-        zonaMock = Mockito.mock(Zona.class);
+        zonaMock = Mockito.mock(Zone.class);
         parkingPorApp = new ParkingViaApp("BO 012 CA", appMock);
         when(appMock.zonaActual()).thenReturn(zonaMock);
         when(appMock.getSistemaCentral()).thenReturn(sistemaCentralMock);

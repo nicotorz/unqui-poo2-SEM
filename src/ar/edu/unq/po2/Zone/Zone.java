@@ -1,6 +1,6 @@
 package ar.edu.unq.po2.Zone;
 
-public class Zona {
+public class Zone {
 
 	public void deleteParking() {
 		
