@@ -16,7 +16,7 @@ public class Parking {
 		return null;
 	}
 
-	public LocalDateTime getHoraFinalizacion() {
+	public LocalDateTime calcularHoraDeFin() {
 		// TODO Auto-generated method stub
 		return null;
 	}

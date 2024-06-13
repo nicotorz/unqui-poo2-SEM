@@ -38,7 +38,7 @@ class ZonaTest {
 		zona = new Zone("Zona1");
 		insepctor1 = new Inspector("Gabriel", zona);
 		
-		zona.setInspector(insepctor1);
+		zona.setInspector(insepctor1); 
 		
 		
 	}

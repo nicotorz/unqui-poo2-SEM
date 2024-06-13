@@ -36,7 +36,7 @@ class InspectorTest {
 	List<Parking> parkings;
 	
 	
-	@BeforeEach
+	@BeforeEach 
 	void setUp() {
 		
 		sem1 = mock(SEMSystem.class);

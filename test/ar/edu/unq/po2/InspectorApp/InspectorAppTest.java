@@ -34,7 +34,7 @@ class InspectorAppTest {
 	
 	@BeforeEach
 	void setUp() {
-		
+		 
 		sem1 = mock(SEMSystem.class);
 		
 		zona1 = new Zone("Zona 1");
