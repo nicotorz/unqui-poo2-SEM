@@ -31,6 +31,11 @@ public class SEMSystem {
 		return true;
 	}
 
+	public double consultarSaldo(String numeroAsociado) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	
 	
 	

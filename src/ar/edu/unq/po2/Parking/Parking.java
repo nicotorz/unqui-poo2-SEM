@@ -4,30 +4,42 @@ import java.time.LocalDateTime;
 
 import ar.edu.unq.po2.Zone.Zona;
 
-public class Parking {
-	private String patente;
-	private LocalDateTime horaInicio;
-	private Zona zona;
+public abstract class Parking {
 	
-	public Parking (String patente, LocalDateTime horaInicio, Zona zona) {
+	protected String patente;
+	protected LocalDateTime horaDeInicio;
+	protected Zona zona;
+	
+	public Parking(String patente) {
 		this.patente = patente;
-		this.horaInicio = horaInicio;
-		this.zona = zona;
+		this.horaDeInicio = LocalDateTime.now();
 	}
+	
+	public abstract int calcularHorasMaximas();
+	public abstract LocalDateTime calcularHoraDeFin();
+	
+	//Getters y Setters
+		public String getPatente() {
+			return this.patente;
+		}
 		
-	public String getPatente() {
-		return patente;
-	}	
-	
-	public LocalDateTime getHoraInicio() {
-		return horaInicio;
-	}	
-	
-	// Getter  
-	public Zona getZona() {
-		return zona;
-	}
-	
-}	
-
-
+		public void setPatente(String patente) {
+			this.patente = patente;
+		}
+		
+		public LocalDateTime getHoraDeInicio() {
+			return this.horaDeInicio;
+		}
+		
+		public void setHoraDeInicio(LocalDateTime horaDeInicio) {
+			this.horaDeInicio = horaDeInicio;
+		}
+		
+		public Zona getZona() {
+			return this.zona;
+		}
+		
+		public void setZona(Zona zona) {
+			this.zona = zona;
+		}
+}

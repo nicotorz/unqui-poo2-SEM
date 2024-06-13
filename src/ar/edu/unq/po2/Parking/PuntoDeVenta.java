@@ -7,18 +7,16 @@ public class PuntoDeVenta {
 	
 	private SEMSystem sistemaCentral;
 	private Zona zona;
-	private CompraPuntual tipoDeCompra;
 	
 	public PuntoDeVenta (SEMSystem sistemaCentral, Zona zona) {
 		this.sistemaCentral = sistemaCentral;
 		this.zona = zona;
-		this.tipoDeCompra = new CompraPuntual(this);
 	}
 	
 	public void venderHorasDeParking(String patente, int horasCompradas) {
-		this.tipoDeCompra.setPatente(patente);
-		this.tipoDeCompra.setHorasCompradas(horasCompradas);
-		tipoDeCompra.procesarCompra();
+		Parking parking = new ParkingPuntual(patente, horasCompradas, this);
+		parking.setZona(this.zona);
+		this.sistemaCentral.addParking(parking);
 	}
 	
 	public void recargarSaldo(String phoneNumber) {
@@ -31,9 +29,4 @@ public class PuntoDeVenta {
 	public SEMSystem getSystem() {
 		return sistemaCentral;
 	}
-
-	public void setTipoDeCompra(CompraPuntual tipoDeCompra) {
-		this.tipoDeCompra = tipoDeCompra;
-	}
-	
 }
