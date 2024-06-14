@@ -14,10 +14,6 @@ public class ParkingViaApp extends Parking {
 	public UserApp getApp() {
 		return this.app;
 	}
-
-	public void setPatente(String patente) {
-		this.patente = patente;
-	}
 	
 	@Override
 	public int calcularHorasMaximas() {

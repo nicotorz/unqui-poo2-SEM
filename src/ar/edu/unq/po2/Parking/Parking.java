@@ -23,16 +23,8 @@ public abstract class Parking {
 			return this.patente;
 		}
 		
-		public void setPatente(String patente) {
-			this.patente = patente;
-		}
-		
 		public LocalDateTime getHoraDeInicio() {
 			return this.horaDeInicio;
-		}
-		
-		public void setHoraDeInicio(LocalDateTime horaDeInicio) {
-			this.horaDeInicio = horaDeInicio;
 		}
 		
 		public Zone getZona() {

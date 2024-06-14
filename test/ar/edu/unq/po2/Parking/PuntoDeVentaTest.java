@@ -63,9 +63,9 @@ class PuntoDeVentaTest {
 	@Test
 	void unPuntoDeVentaSeComunicaConElSemParaIndicarleElCelularAlQueSeDebeCargarCredito() {
 		//exercise
-		kiosko.recargarSaldo("1121746553");
+		kiosko.recargarSaldo(90.0, "1121746553");
 		//verify
-		verify(centralSystem).recargarSaldo("1121746553");
+		verify(centralSystem).recargarSaldo(90.0, "1121746553");
 	}
 
 }

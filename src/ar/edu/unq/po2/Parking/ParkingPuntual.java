@@ -6,16 +6,10 @@ import java.time.LocalDateTime;
 public class ParkingPuntual extends Parking {
 
 	private int horasCompradas;
-	private PuntoDeVenta puntoDeVenta;
 	
-	public ParkingPuntual(String patente, int horasCompradas, PuntoDeVenta puntoDeVenta) {
+	public ParkingPuntual(String patente, int horasCompradas) {
 		super(patente);
 		this.horasCompradas = horasCompradas;
-		this.puntoDeVenta   = puntoDeVenta;
-	}
-
-	public PuntoDeVenta getPuntoDeVenta() {
-		return this.puntoDeVenta;
 	}
 
 	@Override

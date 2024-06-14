@@ -14,13 +14,13 @@ public class PuntoDeVenta {
 	}
 	
 	public void venderHorasDeParking(String patente, int horasCompradas) {
-		Parking parking = new ParkingPuntual(patente, horasCompradas, this);
+		Parking parking = new ParkingPuntual(patente, horasCompradas);
 		parking.setZone(this.zona);
 		this.sistemaCentral.addParking(parking);
 	}
 	
-	public void recargarSaldo(String phoneNumber) {
-		sistemaCentral.recargarSaldo(phoneNumber);
+	public void recargarSaldo(Double monto, String phoneNumber) {
+		sistemaCentral.recargarSaldo(monto, phoneNumber);
 	}
 	public Zone getZona() {
 		return zona;

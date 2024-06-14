@@ -1,5 +1,7 @@
 package ar.edu.unq.po2.Parking;
 
+import java.time.LocalTime;
+
 import ar.edu.unq.po2.Sem.SEMSystem;
 import ar.edu.unq.po2.Zone.Zone;
 
@@ -8,39 +10,58 @@ public class UserApp implements MovementSensor {
 	private String numeroAsociado;
 	private SEMSystem sistemaCentral;
 	private String patentePredeterminada;
-	Modo modo;
-	Boolean hayParkingVigente;
-	
-	public enum Modo {
-		MANUAL, AUTOMATICO
-	}
+	private ModoDeOperacion modo;
+	private EstadoParking estado;
 	
 	public UserApp (String numeroAsociado, SEMSystem sistemaCentral, String patentePredeterminada) {
 		this.numeroAsociado = numeroAsociado;
 		this.sistemaCentral = sistemaCentral;
-		this.hayParkingVigente = false;
-		this.modo = Modo.MANUAL;
+		this.modo = new ModoManual();
+		this.estado = new EstadoParkingNoVigente();
 		this.patentePredeterminada = patentePredeterminada;
+		this.sistemaCentral.registrarUsuario(this);
 	}
 	
+	// Service 
 	public void iniciarParking (String patente) {
-		Parking parking = new ParkingViaApp(patente, this);
-		parking.setZone(this.zonaActual());
-		this.sistemaCentral.addParking(parking);
+		this.estado.iniciarParking(this, patente);
 	}
 	
 	public void finalizarParking () {
-		this.sistemaCentral.endParking(this.numeroAsociado);
-	}
-	
-	public Zone zonaActual() {
-		return null;
+		this.estado.finalizarParking(this);
 	}
 	
 	public double consultarSaldo() {
 		return this.sistemaCentral.consultarSaldo(this.numeroAsociado);
 	}
-
+	
+	public boolean tieneSaldoMinimoParaEstacionamiento() {
+		Double saldoActual = this.consultarSaldo();
+		Double precioPorHoraS = this.sistemaCentral.getPrecioPorHora();
+		return saldoActual > precioPorHoraS;
+	}
+	
+	@Override
+	public void driving() {
+		this.modo.driving(this);
+	}
+	
+	@Override
+	public void walking() {
+		this.modo.walking(this);
+	}
+	
+	public Zone zonaActual() {
+		// Implementar con GPS
+		return null;
+	}
+	
+	public boolean estaEnZonaDeEstacionamiento() {
+		// Implementar con GPS
+		return true;
+	}
+	
+	// Getters y Setters
 	public SEMSystem getSistemaCentral() {
 		return this.sistemaCentral;
 	}
@@ -49,27 +70,12 @@ public class UserApp implements MovementSensor {
 		return this.numeroAsociado;
 	}
 	
-	@Override
-	public void driving() {
-		if (this.modo == Modo.AUTOMATICO && this.hayParkingVigente) {
-			finalizarParking();
-			this.hayParkingVigente = false;
-		} // Deberia preguntar ademas si se encuentra dentro de una de las zonas de parking.
-	}
-
-	@Override
-	public void walking() {
-		if (this.modo == Modo.AUTOMATICO && !this.hayParkingVigente) {
-            iniciarParking(this.patentePredeterminada);
-            this.hayParkingVigente = true;
-		} // Deberia preguntar ademas si se encuentra dentro de una de las zonas de parking.
-	}
-    
-	public void setModo(Modo nuevoModo) {
+	
+	public void setModo(ModoDeOperacion nuevoModo) {
 		this.modo = nuevoModo;
 	}
 	
-	public Modo getModo() {
+	public ModoDeOperacion getModo() {
 		return this.modo;
 	}
 	
@@ -81,7 +87,40 @@ public class UserApp implements MovementSensor {
 		this.patentePredeterminada = patenteNueva;
 	}
 	
-	public void setHayParkingVigente(Boolean bool) {
-		this.hayParkingVigente = bool;
+	public EstadoParking getEstado() {
+		return this.estado;
 	}
+
+	public void setEstado(EstadoParking nuevoEstado) {
+		this.estado = nuevoEstado;
+	}
+	
+	//Notification
+	public void notificarSaldoInsuficiente() {
+		System.out.print("Saldo insuficiente");		
+	}
+	
+	public void notificarInicioDeParking(LocalTime horaInicio, LocalTime horaMaximaDeFin) {
+		System.out.print(
+				"Estacionamiento iniciado con exito." + "Hora de inicio: " + horaInicio.toString()
+						+ "Hora de maxima de fin: " + horaMaximaDeFin.toString());
+	}
+	
+	public void notificarFinDeParking(LocalTime horaInicio, LocalTime horaFin, Double costo, Integer horasDeParking) {
+		System.out.print(
+				"Estacionamiento finalizado con exito." + "Hora de Inicio: " + horaInicio.toString()
+						+ "Hora de fin: " + horaFin.toString() + "Costo: "
+						+ costo.toString() + "Duracion: " + horasDeParking.toString());
+	}
+	
+	public void notificarInicioParkingPosible() {
+		System.out.print("Atención: No detectamos que hayas iniciado el modo de estacionamiento. Por favor, verifica y activa el parking");
+	}
+	
+	
+
+	public void notificarFinParkingPosible() {
+		System.out.print("Atención: No detectamos que hayas finalizado el parking. Por favor, verifica y finaliza el parking");
+	}
+	
 }

@@ -1,13 +1,16 @@
 package ar.edu.unq.po2.Sem;
 
-import java.util.function.BooleanSupplier;
+import java.time.LocalTime;
 
 import ar.edu.unq.po2.Parking.Parking;
+import ar.edu.unq.po2.Parking.ParkingViaApp;
+import ar.edu.unq.po2.Parking.UserApp;
 
 public class SEMSystem {
 
+	private double precioPorHora;
+
 	public void addParking(Parking parking) {
-		
 		
 	}
 
@@ -21,7 +24,7 @@ public class SEMSystem {
 		
 	}
 
-	public void recargarSaldo(String phoneNumber) {
+	public void recargarSaldo(Double monto, String phoneNumber) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -36,6 +39,31 @@ public class SEMSystem {
 		return 0;
 	}
 
+	public void iniciarParking(UserApp app, String patente) {
+		LocalTime horaActual = LocalTime.now();
+		int cantidadDeHorasMaximas = (int) (app.consultarSaldo() / this.precioPorHora);
+		LocalTime horaMaxima = horaActual.plusHours(cantidadDeHorasMaximas);
+		
+		ParkingViaApp parkingNuevo = new ParkingViaApp (patente, app);
+		parkingNuevo.setZone(app.zonaActual());
+		
+		this.addParking(parkingNuevo);
+		app.notificarInicioDeParking(horaActual, horaMaxima);
+	}
+	
+	public void finalizarParking(UserApp app) {
+
+	}
+
+	public Double getPrecioPorHora() {
+		// TODO Auto-generated method stub
+		return 40.0;
+	}
+
+	public void registrarUsuario(UserApp app) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	

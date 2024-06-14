@@ -1,35 +1,36 @@
 package ar.edu.unq.po2.Parking;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.time.LocalTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import ar.edu.unq.po2.Parking.UserApp.Modo;
 import ar.edu.unq.po2.Sem.SEMSystem;
-import ar.edu.unq.po2.Zone.Zone;
 
 class UserAppTest {
 	
 	private SEMSystem sistemaCentralMock;
-	private Zone zonaMock;
 	private UserApp app;
-	private UserApp appSpy;
+	private ModoDeOperacion modoMock;
+	private EstadoParking estadoMock;
 	
 	@BeforeEach
 	public void setUp() {
 		sistemaCentralMock = Mockito.mock(SEMSystem.class);
-		zonaMock = Mockito.mock(Zone.class);
 		app = new UserApp("111234567", sistemaCentralMock, "BO 012 CA");
-		appSpy = Mockito.spy(app);
+		modoMock = Mockito.mock(ModoDeOperacion.class);
+		estadoMock = Mockito.mock(EstadoParking.class);
 	}
+	
 	@Test
 	void unUserAppConoceElSistemaCentralConElCualColabora() {
 		//assert
@@ -43,9 +44,33 @@ class UserAppTest {
 	}
 	
 	@Test 
-	void unUserAppTSeIncializaConUnaPatentePredeterminada() {
+	void unUserAppSeInicializaConSaldoIgualACero() {
+	//assert
+	assertEquals(0.0, app.consultarSaldo(), 0.001);
+	}
+	
+	@Test 
+	void unUserAppSeIncializaConUnaPatentePredeterminada() {
 		//assert 
 		assertEquals(app.getPatentePredeterminada(), "BO 012 CA");
+	}
+	
+	@Test
+	void unUserAppSeInicializaEnModoManualPorDefecto() {
+		//assert
+		assertTrue(app.getModo() instanceof ModoManual);
+	}
+	
+	@Test
+	void unUserAppSeInicializaEnEstadoNoVigentePorDefecto() {
+		//assert
+		assertTrue(app.getEstado() instanceof EstadoParkingNoVigente);
+	}
+	
+	@Test 
+	void cuandoUnUserAppSeInicializaSeRegistraEnElSistemaCentralDado() {
+		//verify
+		verify(sistemaCentralMock, times(1)).registrarUsuario(app);
 	}
 	
 	@Test
@@ -57,99 +82,183 @@ class UserAppTest {
 	}
 	
 	@Test
-	void unUserAppPorDefectoSeEncuentraEnModoManual() {
-		//assert
-		assertEquals(app.modo, Modo.MANUAL);
-	}
-	
-	@Test
-	void unUserAppPorDefectoNoTieneParkingsVigentes() {
-		assertFalse(app.hayParkingVigente);
-	}
-	
-	@Test
 	void unUserAppPuedeConsultarSuSaldoMedianteElSistemaCentral() {
 		//exercise
 		app.consultarSaldo();
 		//verify
-		verify(sistemaCentralMock).consultarSaldo(app.getNumeroAsociado());
+		verify(sistemaCentralMock, times(1)).consultarSaldo("111234567");
 	}
 	
 	@Test
-	void unUserAppPuedeIniciarEstacionamientosDeFormaManual() {
-		//exercise 
-		app.iniciarParking("BO 012 CA");
-		//verify
-		ArgumentCaptor<Parking> parking = ArgumentCaptor.forClass(Parking.class);
-		verify(sistemaCentralMock).addParking(parking.capture());
+	void unUserAppCuandoConsultaSaldoLeRetornaElSaldoDisponible() {
+		//setup
+		when(sistemaCentralMock.consultarSaldo("111234567")).thenReturn(100.0);
+		double saldo = app.consultarSaldo();
+		//assert
+		assertEquals(100.0, saldo, 0.001); //0.001 la tolerancia permitida para comparacion de valores.
+	}
+	
+	@Test
+	void aUnUserAppSeLePuedeConsultarSiTieneSaldoMinimoParaUnEstacionamientoSegunElPrecioPorHoraDelSistema() {
+		 //setup 
+		 when(sistemaCentralMock.consultarSaldo("111234567")).thenReturn(50.0);
+		 when(sistemaCentralMock.getPrecioPorHora()).thenReturn(40.0);
+		 //assert
+	     assertTrue(app.tieneSaldoMinimoParaEstacionamiento());
+	}
+	
+	@Test
+	void aUnUserAppSeLePuedeConsultarSiNoTieneSaldoMinimoParaUnEstacionamientoSegunElPrecioPorHoraDelSistema() {
+		//setup
+		when(sistemaCentralMock.consultarSaldo("111234567")).thenReturn(30.0);
+		when(sistemaCentralMock.getPrecioPorHora()).thenReturn(40.0);
+		//assert
+	    assertFalse(app.tieneSaldoMinimoParaEstacionamiento());
+	}
+	
+	@Test
+	void aUnUserAppSeLePuedeConsultarPorSuEstadoActualSiEsVigente() {
+		//setup
+		EstadoParkingVigente estadoActual = new EstadoParkingVigente();
+		app.setEstado(estadoActual);
+		//assert
+		assertEquals(estadoActual, app.getEstado());
+	}
+	
+	@Test
+	void aUnUserAppSeLePuedeConsultarPorSuEstadoActualSiEsNoVigente() {
+		//setup
+		EstadoParkingNoVigente estadoActual = new EstadoParkingNoVigente();
+		app.setEstado(estadoActual);
+		//assert
+		assertEquals(estadoActual, app.getEstado());
 	}
 	
 	@Test 
-	void unUserAppCuandoInciaEstacionamientosInstanciaUnParkingConLosDatosDados() {
-		//exercise
-		app.iniciarParking("BO 012 CA");
-		//verify
-		ArgumentCaptor<Parking> captor = ArgumentCaptor.forClass(Parking.class);
-		verify(sistemaCentralMock).addParking(captor.capture());
-		Parking parking = captor.getValue(); // Parking capturado
-		assertNotNull(parking); // Se verifica que se haya creado el Parking
-		assertEquals("BO 012 CA", parking.getPatente()); //Se verifica que la patente sea la del vehiculo correcto
-		assertEquals(null, parking.getZona()); //Se verifica que la zona se haya seteado correctamente
-		assertNotNull(parking.getHoraDeInicio()); // Se verifica que la fecha de entrada se haya establecido
+	void aUnUserAppSeLePuedeConsultarPorSuModoActualSiEsManual() {
+		//setup
+		ModoManual modoActual = new ModoManual();
+		app.setModo(modoActual);
+		//assert
+		assertEquals(modoActual, app.getModo());
+	}
+	
+	@Test 
+	void aUnUserAppSeLePuedeConsultarPorSuModoActualSiEsAutomatico() {
+		//setup
+		ModoAutomatico modoActual = new ModoAutomatico();
+		app.setModo(modoActual);
+		//assert
+		assertEquals(modoActual, app.getModo());
 	}
 	
 	@Test
-	void unUserAppPuedeFinalizarEstacionamientosDeFormaManual() {
+	void enUserAppCuandoSeDetectaUnDespalzamientoCaminandoSeDelegaElTrabajoAlModoActual() {
+		//setup
+		app.setModo(modoMock);
+		//exercise 
+		app.walking();
+		//verify
+		verify(modoMock, times(1)).walking(app);
+	}
+	
+	@Test
+	void enUserAppCuandoSeDetectaUnDespalzamientoEnVehiculoSeDelegaElTrabajoAlModoActual() {
+		//setup
+		app.setModo(modoMock);
+		//exercise 
+		app.driving();
+		//verify
+		verify(modoMock, times(1)).driving(app);
+	}
+	
+	@Test
+	void enUserAppCuandoSeIniciaUnParkingSeDelegaElTrabajoAlEstadoActualDeLaApp() {
+		//setup
+		String patente = "BO 012 CA";
+		app.setEstado(estadoMock);
+		//exercise
+		app.iniciarParking(patente);
+		//verify
+		verify(estadoMock, times(1)).iniciarParking(app, patente);
+	}
+	
+	@Test
+	void enUserAppCuandoSeFinalizaUnParkingSeDelegaElTrabajoAlEstadoActualDeLaApp() {
+		//setup
+		app.setEstado(estadoMock);
 		//exercise
 		app.finalizarParking();
 		//verify
-		verify(sistemaCentralMock).endParking(app.getNumeroAsociado());
+        verify(estadoMock, times(1)).finalizarParking(app);
 	}
 	
 	@Test
-	void cuandoElSensorDeMovimientoDetectaQueElDesplazamientoSeRealizaCaminandoSiLaAppEstaEnModoManualNoHaceNada() {
-		//exercise 
-		appSpy.walking();
-		//verify
-		verify(appSpy, never()).iniciarParking(app.getPatentePredeterminada());
-	}
-	
-	@Test 
-	void cuandoElSensorDeMovimientoDetectaQueElDesplazamientoSeRealizaCaminandoSiLaAppEstaEnModoAutomaticoYHayParkingVigenteNoHaceNada() {
-		//setUp
-		appSpy.setModo(Modo.AUTOMATICO);
-		appSpy.setHayParkingVigente(true);
+	void testNotificarSaldoInsuficienteApp() {
+		//setup
+		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(outContent));
 		//exercise
-		appSpy.walking();
-		//verify
-		verify(appSpy, never()).iniciarParking(app.getPatentePredeterminada());
-	}
-	
-	@Test 
-	void cuandoElSensorDeMovimientoDetectaQueElDesplazamientoSeRealizaCaminandoSiLaAppEstaEnModoAutomaticoIniciaElEstacionamieto() {
-		//setUp
-		appSpy.setModo(Modo.AUTOMATICO);
-		//exercise
-		appSpy.walking();
-		//verify
-		verify(appSpy).iniciarParking(app.getPatentePredeterminada());
+		app.notificarSaldoInsuficiente();
+		//assert
+		assertEquals("Saldo insuficiente", outContent.toString().trim());
 	}
 	
 	@Test
-	void cuandoElSensorDeMovimientoDetectaQueElDesplazamientoSeRealizaABordoDeUnVehiculoSiLaAppEstaEnModoManualNoHaceNada() {
-		//exercise 
-		appSpy.driving();
-		//verify
-		verify(appSpy, never()).iniciarParking(app.getPatentePredeterminada());
+	void testNotificarInicioDeEstacionamientoApp() {
+		//setup
+		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		PrintStream originalOut = System.out;
+		System.setOut(new PrintStream(outContent));
+		LocalTime horaInicio = LocalTime.of(10, 0);
+		LocalTime horaFin = LocalTime.of(13, 0);
+		//exercise
+		app.notificarInicioDeParking(horaInicio, horaFin);
+		System.setOut(originalOut);
+		String mensajeEsperado = "Estacionamiento iniciado con exito." + "Hora de inicio: "
+				+ horaInicio.toString() + "Hora de maxima de fin: " + horaFin.toString();
+		//assert
+		assertEquals(mensajeEsperado, outContent.toString().trim());
 	}
 	
 	@Test
-	void cuandoElSensorDeMovimientoDetectaQueElDesplazamientoSeRealizaABordoDeUnVehiculoSiLaAppEstaEnModoAutomaticoFinalizaElEstacionamiento() {
-		//setUp
-		appSpy.setModo(Modo.AUTOMATICO);
+	void testNotificarFinDeEstacionamientoApp() {
+		//setup
+		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		PrintStream originalOut = System.out;
+		System.setOut(new PrintStream(outContent));
+		LocalTime horaInicio = LocalTime.of(10, 0);
+		LocalTime horaFin = LocalTime.of(13, 0);
 		//exercise
-		appSpy.driving();
-		//verify
-		verify(appSpy).finalizarParking();
+		app.notificarFinDeParking(horaInicio, horaFin, 120.0, 3);
+		System.setOut(originalOut);
+		String mensajeEsperado = "Estacionamiento finalizado con exito." 
+									+ "Hora de Inicio: " + horaInicio.toString()
+									+ "Hora de fin: " + horaFin.toString() + "Costo: "
+									+ "120.0" + "Duracion: " + "3";
+		//assert
+		assertEquals(mensajeEsperado, outContent.toString().trim());
+	}
+	
+	@Test
+	void testNotificarInicioParkingPosibleApp() {
+		//setup
+		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(outContent));
+		//exercise
+		app.notificarInicioParkingPosible();
+		//assert
+		assertEquals("Atención: No detectamos que hayas iniciado el modo de estacionamiento. Por favor, verifica y activa el parking", outContent.toString().trim());
+	}
+	
+	@Test
+	void testNotificarFinParkingPosibleApp() {
+		//setup
+		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(outContent));
+		//exercise
+		app.notificarFinParkingPosible();
+		//assert
+		assertEquals("Atención: No detectamos que hayas finalizado el parking. Por favor, verifica y finaliza el parking", outContent.toString().trim());
 	}
 }
