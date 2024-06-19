@@ -1,19 +1,20 @@
 package ar.edu.unq.po2.Sem;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Clock {
-	private LocalDateTime currentTime;
 	
-	public Clock(LocalDateTime currentTime) {
+	private LocalTime currentTime;
+	
+	public Clock(LocalTime currentTime) {
 		this.setCurrentTime(currentTime);
 	}
 
-	public LocalDateTime getCurrentTime() {
+	public LocalTime getCurrentTime() {
 		return currentTime;
 	}
 
-	public void setCurrentTime(LocalDateTime currentTime) {
+	public void setCurrentTime(LocalTime currentTime) {
 		this.currentTime = currentTime;
 	}
 }

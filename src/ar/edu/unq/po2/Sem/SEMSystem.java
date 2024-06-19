@@ -1,14 +1,17 @@
 package ar.edu.unq.po2.Sem;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mockito.internal.stubbing.answers.ThrowsException;
+
 import ar.edu.unq.po2.Infraccion.Infraccion;
 import ar.edu.unq.po2.Inspector.Inspector;
 import ar.edu.unq.po2.Parking.Parking;
+import ar.edu.unq.po2.Parking.ParkingViaApp;
 import ar.edu.unq.po2.Parking.PuntoDeVenta;
 import ar.edu.unq.po2.Zone.Zone;
 
@@ -16,21 +19,26 @@ public class SEMSystem {
 
 	private List<Zone> zones;
 	private List<Inspector> inspectors;
+	private List<UserApp> users;
 	private List<Parking> parkings;
 	private List<Entidad> entidades;
 	private List<Infraccion> infracciones;
-	private Map<String,Double> usuarios;
+	private Map<String,Double> usuarios;	 //<NroCelular, saldo>
+	private Map<String,String> usersPatentes; // <NroCelular,Patente>
 	private List<PuntoDeVenta> puntosDeVentas;
-	private LocalDateTime startTime;
-	private LocalDateTime endTime;
+	private Double precioPorHora;
+	private LocalTime startTime;
+	private LocalTime endTime;
 	private Clock clock;	
 	
 	//Constructor
 	
-	public SEMSystem(LocalDateTime startTime, LocalDateTime endTime,Clock clock) {
+	public SEMSystem(LocalTime startTime, LocalTime endTime,Clock clock) {
 		this.usuarios 	    = new HashMap<String,Double>();
+		this.usersPatentes  = new HashMap<String,String>();
 		this.zones 		    = new ArrayList<Zone>();
 		this.inspectors     = new ArrayList<Inspector>();
+		this.users			= new ArrayList<UserApp>();
 		this.parkings 	    = new ArrayList<Parking>();
 		this.infracciones   = new ArrayList<Infraccion>();
 		this.entidades 	    = new ArrayList<Entidad>();
@@ -40,9 +48,9 @@ public class SEMSystem {
 		this.setEndTime(endTime);
 	}
 	
-	public void issueFine(String patente,Zone zone) {
+	public void darAltaInfraccion(String patente,Zone zone) {
 		if(this.checkParking(patente) && this.checkZone(zone)) {
-			Infraccion nuevaInfraccion = new Infraccion(patente,zone.getInspector(),LocalDateTime.now(),zone);
+			Infraccion nuevaInfraccion = new Infraccion(patente,zone.getInspector(),LocalTime.now(),zone);
 			this.addInfraccion(nuevaInfraccion);
 		}
 	}
@@ -54,21 +62,6 @@ public class SEMSystem {
 		}
 	}
 	
-	public void inicioDeEstacionamiento(Parking parking) {
-		Double saldo = this.consultarSaldo(parking.getUserApp().getNumber());
-		LocalDateTime horaActual = clock.getCurrentTime();
-		LocalDateTime horaMaxima = LocalDateTime.of(24, 10 , 2, 20, 0);
-		this.addParking(parking);
-		if(saldo > 0) {
-			LocalDateTime time =(saldo >= parking.calcularHorasMaximas()) ? horaMaxima : (horaActual.plusHours(horaMaxima.getHour() - horaActual.getHour()));
-			System.out.println( "Inicio de Estacionamiento: " + horaActual + "Fin de estacionamiento: " + time);
-		} else {
-			System.out.println("Saldo insuficiente. Estacionamiento no permitido.");
-		}
-		this.notificarInicioDeEstacionamiento();
-	}
-	
-	
 	public void notificarInicioDeEstacionamiento() {
 		for(Entidad entidad : this.entidades) {
 			entidad.notificarInicio();
@@ -76,23 +69,31 @@ public class SEMSystem {
 		}
 	}
 	
-	public void finDeEstacionamiento(Parking parking) {
-		LocalDateTime horaExacta = parking.getHoraDeInicio();
-		if(!(this.getParkings().contains(parking))) {
-			System.out.println("El parking no existe.");
-		}else {
-			System.out.println("La hora exacta del estacionamiento es: " + horaExacta + "La hora final del estacionamiento: " 
-					+ parking.calcularHorasMaximas() + "El costo del estacionamiento es: " + parking.calcularHorasMaximas());
-			this.endParking(parking);
-		}
-		this.notificarFinDeEstacionamiento();
-	}
-	
 	public void notificarFinDeEstacionamiento() {
 		for(Entidad entidad : this.entidades) {
 			entidad.notificarFin();
 			System.out.println("Fin del estacionamiento");
 		}
+	}
+	
+	public void iniciarParking(UserApp app,String patente) {
+		Parking nuevoParking = new ParkingViaApp(patente,app);
+		LocalTime horaActual = LocalTime.now();
+		int cantidadMaxima = (int) (app.consultarSaldo() / this.getPrecioPorHora());
+		LocalTime horaFin = horaActual.plusHours(cantidadMaxima);
+		this.addParking(nuevoParking);
+		app.notificarInicioDeParking(horaActual,horaFin);
+	}
+	
+	public void finDeParking(UserApp app) {
+		String patente = this.getUsersPatentes().get(app.getNumeroAsociado());
+		Parking parkingFinalizado = this.getParkings().stream().filter(p -> p.getPatente().equals(patente)).findFirst().orElseThrow(() -> new RuntimeException("Parking no encontrado"));
+		LocalTime horaInicio = parkingFinalizado.getHoraDeInicio();
+		LocalTime horaFin    = LocalTime.now();
+		int cantHora     = horaFin.getHour() - horaInicio.getHour();
+		Double costoAPagar = cantHora * this.getPrecioPorHora();
+		this.endParking(parkingFinalizado);
+		app.notificarFinDeParking(horaInicio,horaFin,costoAPagar,cantHora);
 	}
 	
 	//Suscribir o desuscribir
@@ -118,7 +119,7 @@ public class SEMSystem {
 	}
 	
 	public boolean checkParking(String patente) {
-		return this.parkings.stream().anyMatch(p -> p.tienePatente(patente));
+		return this.parkings.stream().anyMatch(p -> p.getPatente().equals(patente));
 	}
 	
 	public Double consultarSaldo(String number) {
@@ -144,18 +145,21 @@ public class SEMSystem {
 	}
 	
 	public void endParking(Parking parking) {
-		for(Parking p : this.getParkings()) {
-			if(p.calcularHorasMaximas() == parking.calcularHorasMaximas()) {				
+			if(this.getParkings().contains(parking)) {				
 				this.parkings.remove(parking); 
+				this.notificarFinDeEstacionamiento();
 			}
-		}
 	}
 	
-	public void endAllParkings() { 
-		if(clock.getCurrentTime().equals(this.getEndTime())) {			
-			this.parkings.removeAll(parkings);
-		}
+	public void finDeFranjaHoraria() {
+		//if(clock.getCurrentTime().isAfter(this.getEndTime())) {
+			for(Parking parking : this .getParkings()) {
+				this.endParking(parking);
+			}
+			//this.getUsers().stream().forEach(u -> u.finalizarParking());
+		//}
 	}
+	
 	
 	//AGREGAR.
 	
@@ -169,10 +173,15 @@ public class SEMSystem {
 	
 	public void addParking(Parking parking) {
 		parkings.add(parking);
+		this.notificarInicioDeEstacionamiento();
 	}
 	
 	public void addInfraccion(Infraccion infraccion) {
 		infracciones.add(infraccion);
+	}
+	
+	public void addUserPatente(String nroCelular,String patente) {
+		this.getUsersPatentes().put(nroCelular, patente);
 	}
 	
 	public void addUsuario(String number,Double saldo) {
@@ -181,20 +190,20 @@ public class SEMSystem {
 	
 	//GET and SET
 	
-	public LocalDateTime getStartTime() {
+	public LocalTime getStartTime() {
 		return startTime;
 	}
-	public void setStartTime(LocalDateTime startTime) {
+	public void setStartTime(LocalTime startTime) {
 		this.startTime = startTime;
 	}
 	
 	public List<Entidad> getEntidad() {
 		return entidades;
 	}
-	public LocalDateTime getEndTime() {
+	public LocalTime getEndTime() {
 		return endTime;
 	}
-	public void setEndTime(LocalDateTime endTime) {
+	public void setEndTime(LocalTime endTime) {
 		this.endTime = endTime;
 	}
 
@@ -217,6 +226,24 @@ public class SEMSystem {
 	public List<Inspector> getInspectors() {
 		return inspectors;
 	}
+
+	public Map<String, String> getUsersPatentes() {
+		return usersPatentes;
+	}
+	
+
+	public Double getPrecioPorHora() {
+		return precioPorHora;
+	}
+	
+	public void setPrecioPorHora(Double precioPorHora) {
+		 this.precioPorHora = precioPorHora;
+	}
+
+	public List<UserApp> getUsers() {
+		return users;
+	}
+	
 	
 	
 	

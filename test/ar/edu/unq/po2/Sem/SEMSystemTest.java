@@ -2,8 +2,10 @@ package ar.edu.unq.po2.Sem;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import ar.edu.unq.po2.Infraccion.Infraccion;
 import ar.edu.unq.po2.Inspector.Inspector;
 import ar.edu.unq.po2.Parking.Parking;
+import ar.edu.unq.po2.Parking.ParkingViaApp;
 import ar.edu.unq.po2.Zone.Zone;
 
 class SEMSystemTest {
@@ -34,29 +37,29 @@ class SEMSystemTest {
 	
 	@BeforeEach
 	void setUp() {
-		user = new UserApp("22334455",155.5);
 		e1 = mock(Entidad.class);
 		e2 = mock(Entidad.class);
-		clock = new Clock(LocalDateTime.of(2024, 6, 5, 20, 00));
-		sem 	   = new SEMSystem(LocalDateTime.of(2024, 6, 5, 8, 00),LocalDateTime.of(2024, 6, 5, 20, 00),clock);
+		clock = new Clock(LocalTime.now());
+		sem 	   = new SEMSystem(LocalTime.of(07, 00),LocalTime.of(20, 00),clock);
+		sem.setPrecioPorHora(40D);
 		patente1   = "patente1";
 		patente2   = "patente2";
 		patente3   = "patente3";
-		parking    = new Parking(user,LocalDateTime.of(2024, 6, 5, 8, 00));
+		user = new UserApp("22334455",sem,patente1);
+		parking    = new ParkingViaApp(patente1,user);
+		parking.setHoraDeInicio(LocalTime.of(8, 00));
 		parking2   = mock(Parking.class);
 		zone 	   = new Zone("zone1");
 		zone2 	   = mock(Zone.class);
 		infraccion = mock(Infraccion.class);
 		inspector  = mock(Inspector.class);
 		inspector2  = mock(Inspector.class);
-		parking.addPatente(patente1);
-		parking.addPatente(patente2);
-		parking.addPatente(patente3);
 		sem.addParking(parking);
 		sem.addParking(parking2);
 		sem.addZone(zone);
 		sem.addZone(zone2);
 		sem.addUsuario("11223344", 150.5);
+		sem.addUserPatente(user.getNumeroAsociado(), patente1);
 	}
 	
 	@Test
@@ -100,7 +103,7 @@ class SEMSystemTest {
 	@Test
 	void issueFineTest() {
 		//Exercise
-		sem.issueFine(patente1, zone);
+		sem.darAltaInfraccion(patente1, zone);
 		//Verify
 		assertEquals(sem.getInfracciones().size(),1);
 	}
@@ -118,8 +121,21 @@ class SEMSystemTest {
 	}
 	
 	@Test
+	void eliminarUnParkingMockTest() {
+		sem.endParking(parking2);
+		//Verify
+		assertEquals(sem.getParkings().size(),1);
+	}
+	
+	@Test
 	void eliminarTodosLosParkingsTest() {
-		sem.endAllParkings();
+		clock.setCurrentTime(LocalTime.of(21, 00));
+		//Mock
+		when(parking2.getHoraDeInicio()).thenReturn(LocalTime.of(12, 00));
+		//
+		parking.setHoraDeInicio(LocalTime.of(13, 00));
+		sem.finDeFranjaHoraria();
+		
 		//Verify
 		assertEquals(sem.getParkings().size(),0);
 	}
@@ -133,12 +149,12 @@ class SEMSystemTest {
 	
 	@Test
 	void timeStartTest() {
-		assertEquals(sem.getStartTime(),LocalDateTime.of(2024, 6, 5, 8, 00));
+		assertEquals(sem.getStartTime(),LocalTime.of(7, 00));
 	}
 	
 	@Test
 	void timeEndTest() {
-		assertEquals(sem.getEndTime(),LocalDateTime.of(2024, 6, 5, 20, 00));
+		assertEquals(sem.getEndTime(),LocalTime.of(20, 00));
 	}
 	
 	@Test
@@ -163,13 +179,18 @@ class SEMSystemTest {
 	@Test
 	void inicioDeEstacionamientoTest() {
 		sem.addUsuario("22334455", 155.5);
-		sem.inicioDeEstacionamiento(parking);
+		sem.iniciarParking(user,patente1);
 		assertEquals(sem.consultarSaldo("22334455"),155.5);
 	}
 	
 	@Test
-	void finDeEstacionamientoTest() {
-		sem.finDeEstacionamiento(parking);
+	void finDeParkingTest() {
+		//Mock
+		when(parking2.getPatente()).thenReturn(patente1);
+		when(parking2.getUserApp()).thenReturn(user);
+		//
+		
+		sem.finDeParking(user);
 		assertEquals(sem.getParkings().size(),1);
 	}
 }
