@@ -21,8 +21,10 @@ class SEMSystemTest {
 
 	SEMSystem sem;
 	UserApp user;
+	UserApp user2;
 	Parking parking;
 	Parking parking2;
+	Parking parking3;
 	Zone zone;
 	Zone zone2;
 	Infraccion infraccion;
@@ -32,28 +34,34 @@ class SEMSystemTest {
 	String patente2;
 	String patente3;
 	Clock clock;
-	Entidad e1;
-	Entidad e2;
+	NotifyEntidad e1;
+	NotifyEntidad e2;
 	
 	@BeforeEach
 	void setUp() {
-		e1 = mock(Entidad.class);
-		e2 = mock(Entidad.class);
-		clock = new Clock(LocalTime.now());
-		sem 	   = new SEMSystem(LocalTime.of(07, 00),LocalTime.of(20, 00),clock);
-		sem.setPrecioPorHora(40D);
+		//Patentes
 		patente1   = "patente1";
 		patente2   = "patente2";
 		patente3   = "patente3";
-		user = new UserApp("22334455",sem,patente1);
+		//
+		clock = new Clock(LocalTime.now());
+		sem 	   = new SEMSystem(LocalTime.of(07, 00),LocalTime.of(20, 00),clock);
+		e1 = mock(NotifyEntidad.class);
+		e2 = mock(NotifyEntidad.class);
+		user = mock(UserApp.class);
+		user2 = mock(UserApp.class);
 		parking    = new ParkingViaApp(patente1,user);
-		parking.setHoraDeInicio(LocalTime.of(8, 00));
 		parking2   = mock(Parking.class);
-		zone 	   = new Zone("zone1");
+		parking3   = mock(Parking.class);
+		zone 	   = mock(Zone.class);
 		zone2 	   = mock(Zone.class);
 		infraccion = mock(Infraccion.class);
 		inspector  = mock(Inspector.class);
 		inspector2  = mock(Inspector.class);
+		sem.setPrecioPorHora(40D);
+		
+		//user = new UserApp("22334455",sem,patente1);
+		parking.setHoraDeInicio(LocalTime.of(8, 00));
 		sem.addParking(parking);
 		sem.addParking(parking2);
 		sem.addZone(zone);
@@ -63,18 +71,13 @@ class SEMSystemTest {
 	}
 	
 	@Test
-	void addZoneTest() {
-		assertEquals(sem.getZones().size(),2);
-	}
-	
-	@Test
-	void addParkingTest() {
+	void cantidadDeParkingsTest() {
 		assertEquals(sem.getParkings().size(),2);
 	}
 	
 	@Test
-	void addUsuarioTest() {
-		assertEquals(sem.getUsuarios().size(),1);
+	void cantidadDeUsuariosTest() {
+		assertEquals(sem.getNroUsuarios().size(),1);
 	}
 	
 	@Test
@@ -82,7 +85,7 @@ class SEMSystemTest {
 		//Exercise
 		sem.endUsuario("11223344");
 		//Verify
-		assertEquals(sem.getUsuarios().size(),0);
+		assertEquals(sem.getNroUsuarios().size(),0);
 	}
 	
 	@Test
@@ -97,11 +100,17 @@ class SEMSystemTest {
 	
 	@Test
 	void checkZoneTest() {
+		//Mock
+		when(zone.getNombre()).thenReturn("zone1");
+		//
 		assertTrue(sem.checkZone(zone));
 	}
 	
 	@Test
-	void issueFineTest() {
+	void darDeAltaUnaInfraccionTest() {
+		//Mock
+				when(zone.getNombre()).thenReturn("zone1");
+		///
 		//Exercise
 		sem.darAltaInfraccion(patente1, zone);
 		//Verify
@@ -121,19 +130,12 @@ class SEMSystemTest {
 	}
 	
 	@Test
-	void eliminarUnParkingMockTest() {
-		sem.endParking(parking2);
-		//Verify
-		assertEquals(sem.getParkings().size(),1);
-	}
-	
-	@Test
 	void eliminarTodosLosParkingsTest() {
-		clock.setCurrentTime(LocalTime.of(21, 00));
 		//Mock
-		when(parking2.getHoraDeInicio()).thenReturn(LocalTime.of(12, 00));
+		when(parking2.getHoraDeInicio()).thenReturn(LocalTime.of(7, 00));
 		//
-		parking.setHoraDeInicio(LocalTime.of(13, 00));
+		parking.setHoraDeInicio(LocalTime.of(7, 00));
+		clock.setCurrentTime(LocalTime.of(21, 00));
 		sem.finDeFranjaHoraria();
 		
 		//Verify
@@ -193,4 +195,37 @@ class SEMSystemTest {
 		sem.finDeParking(user);
 		assertEquals(sem.getParkings().size(),1);
 	}
+	
+	@Test
+	void registrarUsuarioTest() {
+		sem.registrarUsuario(user2);
+		assertEquals(sem.getUsers().size(),1);
+	}
+	
+	@Test
+	void noExisteElUsuarioParaFinalizarTest() {
+		//Mock
+		when(user2.getNumeroAsociado()).thenReturn("15215121");
+		//
+		sem.endUsuario(user2.getNumeroAsociado());
+		assertEquals(sem.getNroUsuarios().size(),1);
+	}
+	
+	@Test
+	void noExisteParkingParaFinalizarTest() {
+		sem.endParking(parking3);
+		assertEquals(sem.getParkings().size(),2);
+	}
+	
+	@Test
+	void noEsPosibleRecargarSaldoTest() {
+		//Mock
+		when(user2.getNumeroAsociado()).thenReturn("15215121");
+		//
+		
+		sem.recargarSaldo(user2.getNumeroAsociado(), 300D);
+		assertEquals(sem.consultarSaldo("15215121"),0.0);
+		
+	}
+	
 }

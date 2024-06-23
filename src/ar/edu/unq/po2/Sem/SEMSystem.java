@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mockito.internal.stubbing.answers.ThrowsException;
-
 import ar.edu.unq.po2.Infraccion.Infraccion;
 import ar.edu.unq.po2.Inspector.Inspector;
 import ar.edu.unq.po2.Parking.Parking;
@@ -21,11 +19,11 @@ public class SEMSystem {
 	private List<Inspector> inspectors;
 	private List<UserApp> users;
 	private List<Parking> parkings;
-	private List<Entidad> entidades;
+	private List<NotifyEntidad> entidades;
 	private List<Infraccion> infracciones;
-	private Map<String,Double> usuarios;	 //<NroCelular, saldo>
+	private Map<String,Double> nroUsuarios;	 //<NroCelular, saldo>
 	private Map<String,String> usersPatentes; // <NroCelular,Patente>
-	private List<PuntoDeVenta> puntosDeVentas;
+	//private List<PuntoDeVenta> puntosDeVentas;
 	private Double precioPorHora;
 	private LocalTime startTime;
 	private LocalTime endTime;
@@ -34,15 +32,15 @@ public class SEMSystem {
 	//Constructor
 	
 	public SEMSystem(LocalTime startTime, LocalTime endTime,Clock clock) {
-		this.usuarios 	    = new HashMap<String,Double>();
+		this.nroUsuarios 	    = new HashMap<String,Double>();
 		this.usersPatentes  = new HashMap<String,String>();
 		this.zones 		    = new ArrayList<Zone>();
 		this.inspectors     = new ArrayList<Inspector>();
 		this.users			= new ArrayList<UserApp>();
 		this.parkings 	    = new ArrayList<Parking>();
 		this.infracciones   = new ArrayList<Infraccion>();
-		this.entidades 	    = new ArrayList<Entidad>();
-		this.puntosDeVentas = new ArrayList<PuntoDeVenta>();
+		this.entidades 	    = new ArrayList<NotifyEntidad>();
+		//this.puntosDeVentas = new ArrayList<PuntoDeVenta>();
 		this.clock          = clock;
 		this.setStartTime(startTime);
 		this.setEndTime(endTime);
@@ -52,27 +50,16 @@ public class SEMSystem {
 		if(this.checkParking(patente) && this.checkZone(zone)) {
 			Infraccion nuevaInfraccion = new Infraccion(patente,zone.getInspector(),LocalTime.now(),zone);
 			this.addInfraccion(nuevaInfraccion);
+		}else {
 		}
 	}
 	
 	public void recargarSaldo(String numeroCelular,Double cargar) { 
 		if(this.existeElNumero(numeroCelular)) {
-			Double numero = this.usuarios.get(numeroCelular) + cargar;
-			this.usuarios.put(numeroCelular,numero);
-		}
-	}
-	
-	public void notificarInicioDeEstacionamiento() {
-		for(Entidad entidad : this.entidades) {
-			entidad.notificarInicio();
-			System.out.println("Inicio del estacionamiento");
-		}
-	}
-	
-	public void notificarFinDeEstacionamiento() {
-		for(Entidad entidad : this.entidades) {
-			entidad.notificarFin();
-			System.out.println("Fin del estacionamiento");
+			Double numero = this.nroUsuarios.get(numeroCelular) + cargar;
+			this.nroUsuarios.put(numeroCelular,numero);
+		}else {
+			System.out.println("No existe el número.");
 		}
 	}
 	
@@ -83,6 +70,7 @@ public class SEMSystem {
 		LocalTime horaFin = horaActual.plusHours(cantidadMaxima);
 		this.addParking(nuevoParking);
 		app.notificarInicioDeParking(horaActual,horaFin);
+		this.notificarInicioDeEstacionamiento();
 	}
 	
 	public void finDeParking(UserApp app) {
@@ -94,18 +82,33 @@ public class SEMSystem {
 		Double costoAPagar = cantHora * this.getPrecioPorHora();
 		this.endParking(parkingFinalizado);
 		app.notificarFinDeParking(horaInicio,horaFin,costoAPagar,cantHora);
+		this.notificarFinDeEstacionamiento();
+	}
+	
+	public void notificarInicioDeEstacionamiento() {
+		for(NotifyEntidad entidad : this.entidades) {
+			entidad.notificarInicio();
+			System.out.println("Inicio del estacionamiento");
+		}
+	}
+	
+	public void notificarFinDeEstacionamiento() {
+		for(NotifyEntidad entidad : this.entidades) {
+			entidad.notificarFin();
+			System.out.println("Fin del estacionamiento");
+		}
 	}
 	
 	//Suscribir o desuscribir
 	
-	public void suscribir(Entidad entidad) {
+	public void suscribir(NotifyEntidad entidad) {
 		if(!(entidades.contains(entidad))) {
 			this.entidades.add(entidad);
 			System.out.println("Usted se ha suscripto correctamente.");		
 		}
 	}
 	
-	public void desuscribir(Entidad entidad) {
+	public void desuscribir(NotifyEntidad entidad) {
 		if(entidades.contains(entidad)) {
 			this.entidades.remove(entidad);
 			System.out.println("Usted se ha desuscripto correctamente.");
@@ -125,43 +128,55 @@ public class SEMSystem {
 	public Double consultarSaldo(String number) {
 		Double saldo = 0D;		
 		if(this.existeElNumero(number)) {
-			saldo = this.usuarios.get(number);
+			saldo = this.nroUsuarios.get(number);
 		}
 		return saldo;
 	} 
 	
 	public boolean existeElNumero(String number) {
-		return this.usuarios.containsKey(number);
+		return this.nroUsuarios.containsKey(number);
 	}
 	
 	//Finalizar
 	
 	public void endUsuario(String number) {
-		for(String numero : this.getUsuarios().keySet()) {
+		for(String numero : this.getNroUsuarios().keySet()) {
 			if(numero.equals(number)){
-				this.getUsuarios().remove(number);				
+				this.getNroUsuarios().remove(number);				
+			}else {
+				System.out.println("El usuario no está disponible.");
 			}
 		}
 	}
 	
 	public void endParking(Parking parking) {
+		//String patenteDelUsuario = this.getUsersPatentes().get(nroAsociado);
+		//Parking parkingAFinalizar = this.getParkings().stream().filter(p -> p.getPatente().equals(patenteDelUsuario)).findFirst().orElse(null);
 			if(this.getParkings().contains(parking)) {				
 				this.parkings.remove(parking); 
 				this.notificarFinDeEstacionamiento();
+			}else {
+				System.out.println("No se encuentra en el parking del SEM.");
 			}
 	}
 	
 	public void finDeFranjaHoraria() {
-		//if(clock.getCurrentTime().isAfter(this.getEndTime())) {
-			for(Parking parking : this .getParkings()) {
-				this.endParking(parking);
+		if(clock.getCurrentTime().isAfter(this.getEndTime())) {
+			for(Parking parking : this.getParkings()) {
+				this.endParking(parking);	
+				//this.getUsers().stream().forEach(u -> u.finalizarParking());
 			}
-			//this.getUsers().stream().forEach(u -> u.finalizarParking());
-		//}
+			this.getParkings().removeAll(parkings);
+		}
 	}
 	
 	
+	
 	//AGREGAR.
+	
+	public void registrarUsuario(UserApp userVigente) {
+		this.getUsers().add(userVigente);
+	}
 	
 	public void addZone(Zone zone) {
 		zones.add(zone);
@@ -185,7 +200,7 @@ public class SEMSystem {
 	}
 	
 	public void addUsuario(String number,Double saldo) {
-		this.getUsuarios().put(number,saldo);
+		this.getNroUsuarios().put(number,saldo);
 	}
 	
 	//GET and SET
@@ -197,7 +212,7 @@ public class SEMSystem {
 		this.startTime = startTime;
 	}
 	
-	public List<Entidad> getEntidad() {
+	public List<NotifyEntidad> getEntidad() {
 		return entidades;
 	}
 	public LocalTime getEndTime() {
@@ -215,8 +230,8 @@ public class SEMSystem {
 		return parkings;
 	}
 
-	public Map<String, Double> getUsuarios() {
-		return usuarios;
+	public Map<String, Double> getNroUsuarios() {
+		return nroUsuarios;
 	}
 
 	public List<Infraccion> getInfracciones() {
