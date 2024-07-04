@@ -9,14 +9,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import ar.edu.unq.po2.Sem.SEMSystem;
+
 class ModoManualTest {
 	
 	private ModoManual modoManual;
 	private UserApp appMock;
 	private EstadoParking estadoMock;
+	private SEMSystem sistemaMock;
 	
 	@BeforeEach
 	public void setup() {
+		sistemaMock = Mockito.mock(SEMSystem.class);
 		appMock = Mockito.mock(UserApp.class);
 		modoManual = new ModoManual();
 		estadoMock = Mockito.mock(EstadoParking.class);
@@ -26,7 +30,8 @@ class ModoManualTest {
 	@Test
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsCaminadoSiEstaFueraDeUnaZonaDeEstacionamientoNoHaceNada() {
 		//setup
-		when(appMock.estaEnZonaDeEstacionamiento()).thenReturn(false);
+		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
+		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(false);
 		//exercise
 		modoManual.walking(appMock);
 		//verify
@@ -36,7 +41,8 @@ class ModoManualTest {
 	@Test 
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsCaminadoSiEstaDentroDeUnaZonaDeEstacionamientoNotficaAlUsuarioDeUnPosibleInicioDeParking() {
 		//setup
-		when(appMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
+		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
+		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
 		//exercise 
 		modoManual.walking(appMock);
 		//verify
@@ -46,7 +52,8 @@ class ModoManualTest {
 	@Test
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsEnVehiculoSiEstaFueraDeUnaZonaDeEstacionamientoNoHaceNada() {
 		//setup
-		when(appMock.estaEnZonaDeEstacionamiento()).thenReturn(false);
+		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
+		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(false);
 		//exercise
 		modoManual.driving(appMock);
 		//verify
@@ -56,7 +63,8 @@ class ModoManualTest {
 	@Test 
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsEnVehiculoSiEstaDentroDeUnaZonaDeEstacionamientoNotficaAlUsuarioDeUnPosibleFinDeParking() {
 		//setup
-		when(appMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
+		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
+		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
 		//exercise 
 		modoManual.driving(appMock);
 		//verify

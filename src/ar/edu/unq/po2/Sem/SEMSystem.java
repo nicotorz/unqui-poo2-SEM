@@ -2,6 +2,7 @@ package ar.edu.unq.po2.Sem;
 
 import java.time.LocalTime;
 
+import ar.edu.unq.po2.Parking.CompraDeEstacionamiento;
 import ar.edu.unq.po2.Parking.Parking;
 import ar.edu.unq.po2.Parking.ParkingViaApp;
 import ar.edu.unq.po2.Parking.UserApp;
@@ -52,7 +53,7 @@ public class SEMSystem {
 	}
 	
 	public void finalizarParking(UserApp app) {
-
+		
 	}
 
 	public Double getPrecioPorHora() {
@@ -64,7 +65,16 @@ public class SEMSystem {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	public void registrarCompra(CompraDeEstacionamiento compra) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean estaEnZonaDeEstacionamiento() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 	
 	
 }

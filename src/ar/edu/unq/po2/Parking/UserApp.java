@@ -11,24 +11,25 @@ public class UserApp implements MovementSensor {
 	private SEMSystem sistemaCentral;
 	private String patentePredeterminada;
 	private ModoDeOperacion modo;
-	private EstadoParking estado;
+	private EstadoParking estadoParking;
+	private EstadoSensor estadoSensor;
 	
 	public UserApp (String numeroAsociado, SEMSystem sistemaCentral, String patentePredeterminada) {
 		this.numeroAsociado = numeroAsociado;
 		this.sistemaCentral = sistemaCentral;
 		this.modo = new ModoManual();
-		this.estado = new EstadoParkingNoVigente();
+		this.estadoParking = new EstadoParkingNoVigente();
 		this.patentePredeterminada = patentePredeterminada;
 		this.sistemaCentral.registrarUsuario(this);
 	}
 	
 	// Service 
 	public void iniciarParking (String patente) {
-		this.estado.iniciarParking(this, patente);
+		this.estadoParking.iniciarParking(this, patente);
 	}
 	
 	public void finalizarParking () {
-		this.estado.finalizarParking(this);
+		this.estadoParking.finalizarParking(this);
 	}
 	
 	public double consultarSaldo() {
@@ -43,22 +44,18 @@ public class UserApp implements MovementSensor {
 	
 	@Override
 	public void driving() {
-		this.modo.driving(this);
+		this.estadoSensor.driving(this);
 	}
 	
 	@Override
 	public void walking() {
-		this.modo.walking(this);
+		this.estadoSensor.walking(this);
 	}
 	
 	public Zone zonaActual() {
 		// Implementar con GPS
-		return null;
-	}
-	
-	public boolean estaEnZonaDeEstacionamiento() {
-		// Implementar con GPS
-		return true;
+		Zone zonaEj = new Zone();
+		return zonaEj;
 	}
 	
 	// Getters y Setters
@@ -88,11 +85,16 @@ public class UserApp implements MovementSensor {
 	}
 	
 	public EstadoParking getEstado() {
-		return this.estado;
+		return this.estadoParking;
 	}
 
 	public void setEstado(EstadoParking nuevoEstado) {
-		this.estado = nuevoEstado;
+		this.estadoParking = nuevoEstado;
+	}
+	
+	public void setEstadoSensor(EstadoSensor estadoSensor) {
+		this.estadoSensor = estadoSensor;
+		
 	}
 	
 	//Notification
@@ -122,5 +124,6 @@ public class UserApp implements MovementSensor {
 	public void notificarFinParkingPosible() {
 		System.out.print("Atención: No detectamos que hayas finalizado el parking. Por favor, verifica y finaliza el parking");
 	}
+
 	
 }

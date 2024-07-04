@@ -10,9 +10,10 @@ public class EstadoParkingVigente extends EstadoParking {
 	@Override
 	public void finalizarParking(UserApp app) {
 		app.getSistemaCentral().endParking(app.getNumeroAsociado());;	
-		app.setEstado(new EstadoParkingNoVigente());
+		app.setEstado(new EstadoParkingNoVigente()); 
 	}
 	
+	@Override
 	public void notificarFinParkingPosible(UserApp app) {
 		app.notificarFinParkingPosible();
 	}

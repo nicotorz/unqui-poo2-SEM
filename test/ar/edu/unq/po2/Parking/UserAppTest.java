@@ -15,19 +15,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import ar.edu.unq.po2.Sem.SEMSystem;
+import ar.edu.unq.po2.Zone.Zone;
 
 class UserAppTest {
 	
 	private SEMSystem sistemaCentralMock;
 	private UserApp app;
-	private ModoDeOperacion modoMock;
+	private EstadoSensor estadoSMock;
 	private EstadoParking estadoMock;
 	
 	@BeforeEach
 	public void setUp() {
 		sistemaCentralMock = Mockito.mock(SEMSystem.class);
 		app = new UserApp("111234567", sistemaCentralMock, "BO 012 CA");
-		modoMock = Mockito.mock(ModoDeOperacion.class);
+		estadoSMock = Mockito.mock(EstadoSensor.class);
 		estadoMock = Mockito.mock(EstadoParking.class);
 	}
 	
@@ -153,23 +154,23 @@ class UserAppTest {
 	}
 	
 	@Test
-	void enUserAppCuandoSeDetectaUnDespalzamientoCaminandoSeDelegaElTrabajoAlModoActual() {
+	void enUserAppCuandoSeDetectaUnDespalzamientoCaminandoSeDelegaElTrabajoAlEstadoDelSensor() {
 		//setup
-		app.setModo(modoMock);
+		app.setEstadoSensor(estadoSMock);
 		//exercise 
 		app.walking();
 		//verify
-		verify(modoMock, times(1)).walking(app);
+		verify(estadoSMock, times(1)).walking(app);
 	}
 	
 	@Test
 	void enUserAppCuandoSeDetectaUnDespalzamientoEnVehiculoSeDelegaElTrabajoAlModoActual() {
 		//setup
-		app.setModo(modoMock);
+		app.setEstadoSensor(estadoSMock);
 		//exercise 
 		app.driving();
 		//verify
-		verify(modoMock, times(1)).driving(app);
+		verify(estadoSMock, times(1)).driving(app);
 	}
 	
 	@Test
@@ -261,4 +262,5 @@ class UserAppTest {
 		//assert
 		assertEquals("Atención: No detectamos que hayas finalizado el parking. Por favor, verifica y finaliza el parking", outContent.toString().trim());
 	}
+	
 }

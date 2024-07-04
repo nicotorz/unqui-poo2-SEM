@@ -67,5 +67,32 @@ class PuntoDeVentaTest {
 		//verify
 		verify(centralSystem).recargarSaldo(90.0, "1121746553");
 	}
-
+	
+	@Test
+	void enUnPuntoDeVentaElIDParaLaCompraEs0PorDefecto() {
+		//assert
+		assertEquals(kiosko.getId(), 0);
+	}
+	
+	@Test 
+	void enUnPuntoDeVentaSeAsignaIDsDiferentes() {
+		//assert 
+		assertEquals(kiosko.getId(), 0);
+		//exercise
+		kiosko.asignarId();
+		int nuevoID = kiosko.asignarId();
+		//assert
+		assertEquals(nuevoID, 1);
+	}
+	
+	@Test
+	void cuandoElIDDelPuntoDeVentaLlegaA9999SeReseteaA0() {
+		// setup
+		kiosko.setId(9999); 
+		//exercisie 
+		kiosko.asignarId();
+		int nuevoID = kiosko.asignarId();
+		//assert
+		assertEquals(nuevoID, 0);
+	}
 }
