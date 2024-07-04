@@ -38,7 +38,7 @@ public class UserApp implements MovementSensor {
 	
 	public boolean tieneSaldoMinimoParaEstacionamiento() {
 		Double saldoActual = this.consultarSaldo();
-		Double precioPorHoraS = this.sistemaCentral.getPrecioPorHora();
+		Double precioPorHoraS = (double) this.sistemaCentral.getPrecioPorHora();
 		return saldoActual > precioPorHoraS;
 	}
 	
