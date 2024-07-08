@@ -14,7 +14,7 @@ import ar.edu.unq.po2.Inspector.InspectorApp;
 import ar.edu.unq.po2.Parking.Parking;
 import ar.edu.unq.po2.Sem.SEMSystem;
 import ar.edu.unq.po2.Zone.Zone;
-
+ 
 class InspectorAppTest {
 
 	Inspector inspector;
@@ -37,7 +37,7 @@ class InspectorAppTest {
 		 
 		sem1 = mock(SEMSystem.class);
 		
-		zona1 = new Zone("Zona 1");
+		zona1 = new Zone();
 		
 		inspector = new Inspector("Gabriel", zona1);
 		
@@ -69,6 +69,16 @@ class InspectorAppTest {
 		
 	}
 
+	@Test
+	void testSeteoDeInspector() {
+		
+		inspectorApp.setInspector(inspector);
+		
+		assertEquals(inspectorApp.getInspector(), inspector);
+		
+		
+	}
+	
 	
 	@Test
 	void testInspectorAppConsultaDeEstacionamiento() {

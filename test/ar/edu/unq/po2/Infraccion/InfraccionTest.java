@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import ar.edu.unq.po2.Inspector.Inspector;
 import ar.edu.unq.po2.Zone.Zone;
-
+ 
 class InfraccionTest {
 
 	Infraccion infraccion;

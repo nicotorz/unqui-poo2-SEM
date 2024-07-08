@@ -17,12 +17,17 @@ import org.junit.jupiter.api.Test;
 import ar.edu.unq.po2.Parking.Parking;
 import ar.edu.unq.po2.Sem.SEMSystem;
 import ar.edu.unq.po2.Zone.Zone;
-
+ 
 class InspectorTest {
 
 	
 	Inspector inspector;
 	InspectorApp inspectorApp;
+	
+	
+	
+	
+	
 	
 	SEMSystem sem1;
 	SEMSystem sem2;
@@ -41,7 +46,7 @@ class InspectorTest {
 		
 		sem1 = mock(SEMSystem.class);
 		
-		zona1 = new Zone("Zona 1");
+		zona1 = new Zone();
 		
 		inspector = new Inspector("Gabriel", zona1);
 		
@@ -58,6 +63,23 @@ class InspectorTest {
 		
 	}
 	
+	
+	@Test
+	void testGetNombreDeInspector() {
+		
+		assertEquals(inspector.getName(), "Gabriel");
+		inspector.setName("Dario");
+		assertEquals(inspector.getName(), "Dario");
+	}
+	
+	
+	@Test
+	void testGetDeAppDeInspector() {
+		
+		assertEquals(inspector.getApp(), inspectorApp);
+		
+		
+	}
 	
 	
 	

@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import ar.edu.unq.po2.Inspector.Inspector;
 import ar.edu.unq.po2.Parking.Parking;
-import ar.edu.unq.po2.Parking.PointOfSale;
+import ar.edu.unq.po2.Parking.PuntoDeVenta;
 
-
+ 
 class ZonaTest {
 
 	Zone zona;
@@ -22,7 +22,7 @@ class ZonaTest {
 	Inspector insepctor2;
 	
 	
-	PointOfSale puntoDeVenta;
+	PuntoDeVenta puntoDeVenta;
 	Parking parking;
 	
 	
@@ -33,9 +33,9 @@ class ZonaTest {
 	
 		
 		parking = mock(Parking.class);
-		puntoDeVenta = mock(PointOfSale.class);
+		puntoDeVenta = mock(PuntoDeVenta.class);
 		
-		zona = new Zone("Zona1");
+		zona = new Zone();
 		insepctor1 = new Inspector("Gabriel", zona);
 		
 		zona.setInspector(insepctor1); 
