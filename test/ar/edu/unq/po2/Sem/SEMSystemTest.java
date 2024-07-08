@@ -228,4 +228,9 @@ class SEMSystemTest {
 		
 	}
 	
+	@Test
+	void estaEnZonaDeEstacionamientoTeste() {
+		assertTrue(sem.estaEnZonaDeEstacionamiento());
+	}
+	
 }

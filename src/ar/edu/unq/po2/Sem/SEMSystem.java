@@ -88,15 +88,17 @@ public class SEMSystem {
 	public void notificarInicioDeEstacionamiento() {
 		for(NotifyEntidad entidad : this.entidades) {
 			entidad.notificarInicio();
-			System.out.println("Inicio del estacionamiento");
 		}
 	}
 	
 	public void notificarFinDeEstacionamiento() {
 		for(NotifyEntidad entidad : this.entidades) {
 			entidad.notificarFin();
-			System.out.println("Fin del estacionamiento");
 		}
+	}
+	
+	public boolean estaEnZonaDeEstacionamiento() {
+		return true;
 	}
 	
 	//Suscribir o desuscribir
