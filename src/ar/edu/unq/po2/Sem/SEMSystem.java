@@ -41,6 +41,7 @@ public class SEMSystem {
 		this.parkings 	    = new ArrayList<Parking>();
 		this.infracciones   = new ArrayList<Infraccion>();
 		this.entidades 	    = new ArrayList<NotifyEntidad>();
+		this.comprasDeEstacionamiento = new ArrayList<CompraDeEstacionamiento>();
 		this.setStartTime(startTime);
 		this.setEndTime(endTime);
 	}
@@ -258,4 +259,19 @@ public class SEMSystem {
 	public List<UserApp> getUsers() {
 		return users;
 	}
+
+	public List<Infraccion> getInfracciones() {
+		return infracciones;
+	}
+
+	public List<Inspector> getInspectors() {
+		return inspectors;
+	}
+
+	public List<CompraDeEstacionamiento> getComprasDeEstacionamiento() {
+		return comprasDeEstacionamiento;
+	}
+	
+	
+	
 }
