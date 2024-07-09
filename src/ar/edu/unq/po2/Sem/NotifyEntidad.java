@@ -4,5 +4,6 @@ public interface  NotifyEntidad {
 
 	public void notificarInicio();
 	public void notificarFin();
+	public void notificarCarga();
 
 }

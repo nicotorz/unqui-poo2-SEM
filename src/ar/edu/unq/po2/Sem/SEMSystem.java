@@ -8,10 +8,11 @@ import java.util.Map;
 
 import ar.edu.unq.po2.Infraccion.Infraccion;
 import ar.edu.unq.po2.Inspector.Inspector;
+import ar.edu.unq.po2.Parking.CompraDeEstacionamiento;
 import ar.edu.unq.po2.Parking.Parking;
 import ar.edu.unq.po2.Parking.ParkingViaApp;
-import ar.edu.unq.po2.Parking.PuntoDeVenta;
 import ar.edu.unq.po2.Zone.Zone;
+import ar.edu.unq.po2.Parking.UserApp;
 
 public class SEMSystem {
 
@@ -19,19 +20,18 @@ public class SEMSystem {
 	private List<Inspector> inspectors;
 	private List<UserApp> users;
 	private List<Parking> parkings;
+	private List<CompraDeEstacionamiento> comprasDeEstacionamiento;
 	private List<NotifyEntidad> entidades;
 	private List<Infraccion> infracciones;
 	private Map<String,Double> nroUsuarios;	 //<NroCelular, saldo>
 	private Map<String,String> usersPatentes; // <NroCelular,Patente>
-	//private List<PuntoDeVenta> puntosDeVentas;
 	private Double precioPorHora;
 	private LocalTime startTime;
 	private LocalTime endTime;
-	private Clock clock;	
 	
 	//Constructor
 	
-	public SEMSystem(LocalTime startTime, LocalTime endTime,Clock clock) {
+	public SEMSystem(LocalTime startTime, LocalTime endTime) {
 		this.nroUsuarios 	    = new HashMap<String,Double>();
 		this.usersPatentes  = new HashMap<String,String>();
 		this.zones 		    = new ArrayList<Zone>();
@@ -40,8 +40,6 @@ public class SEMSystem {
 		this.parkings 	    = new ArrayList<Parking>();
 		this.infracciones   = new ArrayList<Infraccion>();
 		this.entidades 	    = new ArrayList<NotifyEntidad>();
-		//this.puntosDeVentas = new ArrayList<PuntoDeVenta>();
-		this.clock          = clock;
 		this.setStartTime(startTime);
 		this.setEndTime(endTime);
 	}
@@ -50,14 +48,14 @@ public class SEMSystem {
 		if(this.checkParking(patente) && this.checkZone(zone)) {
 			Infraccion nuevaInfraccion = new Infraccion(patente,zone.getInspector(),LocalTime.now(),zone);
 			this.addInfraccion(nuevaInfraccion);
-		}else {
-		}
+		}else { }
 	}
 	
-	public void recargarSaldo(String numeroCelular,Double cargar) { 
+	public void recargarSaldo(Double monto, String numeroCelular) { 
 		if(this.existeElNumero(numeroCelular)) {
-			Double numero = this.nroUsuarios.get(numeroCelular) + cargar;
-			this.nroUsuarios.put(numeroCelular,numero);
+			Double saldoActual = this.nroUsuarios.get(numeroCelular);
+			this.nroUsuarios.put(numeroCelular,saldoActual + monto);
+			this.notificarCargaDeSaldo();
 		}else {
 			System.out.println("No existe el número.");
 		}
@@ -94,6 +92,12 @@ public class SEMSystem {
 	public void notificarFinDeEstacionamiento() {
 		for(NotifyEntidad entidad : this.entidades) {
 			entidad.notificarFin();
+		}
+	}
+	
+	public void notificarCargaDeSaldo() {
+		for(NotifyEntidad entidad : this.entidades) {
+			entidad.notificarCarga();
 		}
 	}
 	
@@ -163,7 +167,7 @@ public class SEMSystem {
 	}
 	
 	public void finDeFranjaHoraria() {
-		if(clock.getCurrentTime().isAfter(this.getEndTime())) {
+		if(LocalTime.now().isAfter(this.getEndTime())) {
 			for(Parking parking : this.getParkings()) {
 				this.endParking(parking);	
 				//this.getUsers().stream().forEach(u -> u.finalizarParking());
@@ -180,6 +184,9 @@ public class SEMSystem {
 		this.getUsers().add(userVigente);
 	}
 	
+	public void registrarCompra(CompraDeEstacionamiento compra) {
+		comprasDeEstacionamiento.add(compra);
+	}
 	public void addZone(Zone zone) {
 		zones.add(zone);
 	}
@@ -187,7 +194,7 @@ public class SEMSystem {
 	public void addInspector(Inspector inspector) {
 		inspectors.add(inspector);
 	}
-	
+
 	public void addParking(Parking parking) {
 		parkings.add(parking);
 		this.notificarInicioDeEstacionamiento();
@@ -223,32 +230,22 @@ public class SEMSystem {
 	public void setEndTime(LocalTime endTime) {
 		this.endTime = endTime;
 	}
-
+	
 	public List<Zone> getZones() {
 		return zones;
 	}
-
+	
 	public List<Parking> getParkings() {
 		return parkings;
 	}
-
 	public Map<String, Double> getNroUsuarios() {
 		return nroUsuarios;
-	}
-
-	public List<Infraccion> getInfracciones() {
-		return infracciones;
-	}
-
-	public List<Inspector> getInspectors() {
-		return inspectors;
 	}
 
 	public Map<String, String> getUsersPatentes() {
 		return usersPatentes;
 	}
 	
-
 	public Double getPrecioPorHora() {
 		return precioPorHora;
 	}
@@ -260,8 +257,4 @@ public class SEMSystem {
 	public List<UserApp> getUsers() {
 		return users;
 	}
-	
-	
-	
-	
 }
