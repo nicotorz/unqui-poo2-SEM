@@ -44,7 +44,12 @@ class ZonaTest {
 	}
 	
 	
-	
+	@Test
+	void testSeteoDeNombreDeZona() {
+		
+		
+		
+	}
 	
 	
 	@Test

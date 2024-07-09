@@ -96,7 +96,7 @@ class InspectorAppTest {
 		
 		inspectorApp.issueFine("FKH895", zona1);
 		
-		verify(sem1).issueFine("FKH895", inspectorApp.getInspector().getZona(), inspector);
+		verify(sem1).darAltaInfraccion("FKH895", zona1);
 		
 	}
 	

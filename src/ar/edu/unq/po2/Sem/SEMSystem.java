@@ -1,5 +1,6 @@
 package ar.edu.unq.po2.Sem;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class SEMSystem {
 	
 	public void darAltaInfraccion(String patente,Zone zone) {
 		if(this.checkParking(patente) && this.checkZone(zone)) {
-			Infraccion nuevaInfraccion = new Infraccion(patente,zone.getInspector(),LocalTime.now(),zone);
+			Infraccion nuevaInfraccion = new Infraccion(patente,zone.getInspector(),LocalDateTime.now(), zone);
 			this.addInfraccion(nuevaInfraccion);
 		}else { }
 	}
@@ -124,7 +125,7 @@ public class SEMSystem {
 	//Verifica si está en la lista
 	
 	public boolean checkZone(Zone zone) {
-		return this.zones.stream().anyMatch(z -> z.getNombre().equals(zone.getNombre()));
+		return this.zones.contains(zone);
 	}
 	
 	public boolean checkParking(String patente) {

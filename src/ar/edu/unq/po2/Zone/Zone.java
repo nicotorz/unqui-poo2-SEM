@@ -13,6 +13,7 @@ public class Zone {
 	private List<Parking> estacionamientos;
 	private List<PuntoDeVenta> listaPuntosDeVenta;
 	private Inspector inspector;
+	
 	 
 	public Zone() {
 		super();
@@ -61,12 +62,8 @@ public class Zone {
 	public void setInspector(Inspector inspector) {
 		this.inspector = inspector;
 	}
-	
-	
-	
-	
-	
-	
+
+
 	
 	
 	

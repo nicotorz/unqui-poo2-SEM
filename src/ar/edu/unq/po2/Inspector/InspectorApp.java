@@ -36,7 +36,7 @@ public class InspectorApp {
 	public void issueFine(String patente, Zone zona) {
 		// TODO Auto-generated method stub
 		
-		this.sem.issueFine(patente, zona, this.getInspector());
+		this.sem.darAltaInfraccion(patente, zona);
 		
 		
 	}

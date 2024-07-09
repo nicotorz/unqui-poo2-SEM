@@ -5,7 +5,6 @@ import java.util.List;
 
 import ar.edu.unq.po2.Infraccion.Infraccion;
 import ar.edu.unq.po2.Parking.Parking;
-import ar.edu.unq.po2.Sem.Clock;
 import ar.edu.unq.po2.Sem.SEMSystem;
 import ar.edu.unq.po2.Zone.Zone;
 

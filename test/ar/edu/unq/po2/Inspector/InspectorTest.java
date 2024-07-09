@@ -97,7 +97,7 @@ class InspectorTest {
 		
 		inspector.recorrerEstacionamientosDeZona();
 		
-		verify(sem1, never()).issueFine("GHJ-123", inspector.getZona(), inspector); // nunca llamo a este metodo
+		verify(sem1, never()).darAltaInfraccion("GHJ-123", zona1); // nunca llamo a este metodo
 		
 		
 	}
@@ -117,7 +117,7 @@ class InspectorTest {
 		
 		inspector.recorrerEstacionamientosDeZona();
 		
-		verify(sem1).issueFine("GHJ-123", inspector.getZona(), inspector); // llamo a este metodo
+		verify(sem1).darAltaInfraccion("GHJ-123", zona1); // llamo a este metodo
 
 		
 		
