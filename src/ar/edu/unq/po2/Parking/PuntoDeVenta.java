@@ -25,7 +25,7 @@ public class PuntoDeVenta {
 		this.registrarCompra(horasCompradas);
 	}
 	
-	void registrarCompra(int horasCompradas) {
+	private void registrarCompra(int horasCompradas) {
 		LocalTime horaDeCompra  = LocalTime.now();
 		LocalDate fechaDeCompra   = LocalDate.now();
 		double monto = horasCompradas * (this.sistemaCentral.getPrecioPorHora());

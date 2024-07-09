@@ -41,8 +41,8 @@ class ModoManualTest {
 	@Test 
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsCaminadoSiEstaDentroDeUnaZonaDeEstacionamientoNotficaAlUsuarioDeUnPosibleInicioDeParking() {
 		//setup
-		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
-		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
+		when(appMock.estaEnZonaDeEstacionamientoMedido()).thenReturn(true);
+		when(appMock.notificacionesActivas()).thenReturn(true);
 		//exercise 
 		modoManual.walking(appMock);
 		//verify
@@ -63,8 +63,8 @@ class ModoManualTest {
 	@Test 
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsEnVehiculoSiEstaDentroDeUnaZonaDeEstacionamientoNotficaAlUsuarioDeUnPosibleFinDeParking() {
 		//setup
-		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
-		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
+		when(appMock.estaEnZonaDeEstacionamientoMedido()).thenReturn(true);
+		when(appMock.notificacionesActivas()).thenReturn(true);
 		//exercise 
 		modoManual.driving(appMock);
 		//verify

@@ -13,6 +13,7 @@ public class UserApp implements MovementSensor {
 	private ModoDeOperacion modo;
 	private EstadoParking estadoParking;
 	private EstadoSensor estadoSensor;
+	private Boolean notificacionesActivas;
 	
 	public UserApp (String numeroAsociado, SEMSystem sistemaCentral, String patentePredeterminada) {
 		this.numeroAsociado = numeroAsociado;
@@ -21,6 +22,7 @@ public class UserApp implements MovementSensor {
 		this.estadoParking = new EstadoParkingNoVigente();
 		this.patentePredeterminada = patentePredeterminada;
 		this.sistemaCentral.registrarUsuario(this);
+		this.notificacionesActivas = true;
 	}
 	
 	// Service 
@@ -40,6 +42,18 @@ public class UserApp implements MovementSensor {
 		Double saldoActual = this.consultarSaldo();
 		Double precioPorHoraS = (double) this.sistemaCentral.getPrecioPorHora();
 		return saldoActual > precioPorHoraS;
+	}
+	
+	public boolean estaEnZonaDeEstacionamientoMedido() {
+		return (this.getSistemaCentral().estaEnZonaDeEstacionamiento());
+	}
+	
+	public boolean notificacionesActivas() {
+		return notificacionesActivas;
+	}
+	
+	public void activarODesactivarNotificaciones() {
+		this.notificacionesActivas = !notificacionesActivas;
 	}
 	
 	@Override
@@ -124,6 +138,4 @@ public class UserApp implements MovementSensor {
 	public void notificarFinParkingPosible() {
 		System.out.print("Atención: No detectamos que hayas finalizado el parking. Por favor, verifica y finaliza el parking");
 	}
-
-	
 }

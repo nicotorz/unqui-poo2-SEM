@@ -29,8 +29,7 @@ class ModoAutomaticoTest {
 	@Test
 	void unModoAutomaticoCuandoSeDetectaQueElDesplazamientoEsCaminadoSiEstaFueraDeUnaZonaDeEstacionamientoNoHaceNada() {
 		//setup
-		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
-		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(false);
+		when(appMock.estaEnZonaDeEstacionamientoMedido()).thenReturn(false);
 		//exercise
 		modoAutomatico.walking(appMock);
 		//verify
@@ -40,8 +39,7 @@ class ModoAutomaticoTest {
 	@Test 
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsCaminadoSiEstaDentroDeUnaZonaDeEstacionamientoNotficaAlUsuarioDeUnPosibleInicioDeParking() {
 		//setup
-		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
-		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
+		when(appMock.estaEnZonaDeEstacionamientoMedido()).thenReturn(true);
 		//exercise
 		modoAutomatico.walking(appMock);
 		//verify
@@ -51,8 +49,7 @@ class ModoAutomaticoTest {
 	@Test
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsEnVehiculoSiEstaFueraDeUnaZonaDeEstacionamientoNoHaceNada() {
 		//setup
-		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
-		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(false);
+		when(appMock.estaEnZonaDeEstacionamientoMedido()).thenReturn(false);
 		//exercise
 		modoAutomatico.driving(appMock);
 		//verify
@@ -62,8 +59,7 @@ class ModoAutomaticoTest {
 	@Test 
 	void unModoManualCuandoSeDetectaQueElDesplazamientoEsEnVehiculoSiEstaDentroDeUnaZonaDeEstacionamientoNotficaAlUsuarioDeUnPosibleFinDeParking() {
 		//setup
-		when(appMock.getSistemaCentral()).thenReturn(sistemaMock);
-		when(sistemaMock.estaEnZonaDeEstacionamiento()).thenReturn(true);
+		when(appMock.estaEnZonaDeEstacionamientoMedido()).thenReturn(true);
 		//exercise
 		modoAutomatico.driving(appMock);
 		//verify

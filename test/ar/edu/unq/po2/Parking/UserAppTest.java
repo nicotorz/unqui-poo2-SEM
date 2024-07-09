@@ -195,6 +195,28 @@ class UserAppTest {
 	}
 	
 	@Test
+	void unUserAppConoceSiEstaEnZonaDeEstacionamientoMedidoMedianteElSistemaCentral() {
+		//exercise
+		app.estaEnZonaDeEstacionamientoMedido();
+		//assert
+		verify(sistemaCentralMock, times(1)).estaEnZonaDeEstacionamiento();
+	}
+	
+	@Test
+	void unUserAppTieneLasNotificacionesActivadasPorDefecto() {
+		//assert 
+		assertTrue(app.notificacionesActivas());
+	}
+	
+	@Test 
+	void unUserAppPuedeDesactivarLasNotificaciones() {
+		//exercise
+		app.activarODesactivarNotificaciones();
+		//assert
+		assertFalse(app.notificacionesActivas());
+	}
+	
+	@Test
 	void testNotificarSaldoInsuficienteApp() {
 		//setup
 		ByteArrayOutputStream outContent = new ByteArrayOutputStream();

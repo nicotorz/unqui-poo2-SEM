@@ -11,7 +11,7 @@ public class EstadoCaminando implements EstadoSensor {
 
 	@Override
 	public void walking(UserApp app) {
-		// No hace nada, este metodo se invoca de manera constante mientras el sensor este detectando que el desplazamiento es camiando.
+		// No hace nada, este metodo se invoca de manera constante mientras el sensor este detectando que el desplazamiento es caminando.
 
 	}
 
