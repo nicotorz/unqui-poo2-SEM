@@ -70,7 +70,6 @@ public class SEMSystem {
 		LocalTime horaFin = horaActual.plusHours(cantidadMaxima);
 		this.addParking(nuevoParking);
 		app.notificarInicioDeParking(horaActual,horaFin);
-		this.notificarInicioDeEstacionamiento();
 	}
 	
 	public void finDeParking(UserApp app) {
@@ -82,7 +81,6 @@ public class SEMSystem {
 		Double costoAPagar = cantHora * this.getPrecioPorHora();
 		this.endParking(parkingFinalizado);
 		app.notificarFinDeParking(horaInicio,horaFin,costoAPagar,cantHora);
-		this.notificarFinDeEstacionamiento();
 	}
 	
 	public void notificarInicioDeEstacionamiento() {
@@ -172,9 +170,7 @@ public class SEMSystem {
 		if(LocalTime.now().isAfter(this.getEndTime())) {
 			for(Parking parking : this.getParkings()) {
 				this.endParking(parking);	
-				//this.getUsers().stream().forEach(u -> u.finalizarParking());
 			}
-			this.getParkings().removeAll(parkings);
 		}
 	}
 	
